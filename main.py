@@ -17,21 +17,75 @@ def imprimir_tablero(tablero):
 
 #entrada del jugador
 def movimiento_jugador(tablero, jugador):
-    while True:
-        fila = int(input("Elige fila (0, 1, 2): "))
-        columna = int(input("Elige columna (0, 1, 2): "))
-        if tablero[fila][columna] == " ":
-            tablero[fila][columna] = jugador
-            break
-        else:
-            print("¡Casilla ocupada!")
+        while True:
+            try:
+                fila = int(input("Elige fila (0, 1, 2): "))
+                columna = int(input("Elige columna (0, 1, 2): "))
+                if 0 <= fila <= 2 and 0 <= columna <= 2:
+                    if tablero[fila][columna] == " ":
+                        tablero[fila][columna] = jugador
+                        break
+                    else:
+                        print("¡Casilla ocupada!")
+                else:
+                    print("ingrese un valores entre 0, 1 o 2")
+            except ValueError:
+                print("No ingrese valores vacíos o inválidos, sólo números enteros")
 
 #jugada ia
 def movimiento_ia(tablero):
-    casillas_vacias = [(i, j) for i in range(3) for j in range(3) if tablero[i][j] == " "]
-    if casillas_vacias:
-        fila, columna = random.choice(casillas_vacias)
-        tablero[fila][columna] = "O"
+    grifear_jugador = jugada_grifeadora(tablero)
+    if not grifear_jugador:
+        casillas_vacias = [(i, j) for i in range(3) for j in range(3) if tablero[i][j] == " "]
+        if casillas_vacias:
+            fila, columna = random.choice(casillas_vacias)
+            tablero[fila][columna] = "O"
+
+#hacer jugada grifeadora
+def jugada_grifeadora(tablero):
+    # revisar coincidencia en fila 0
+    for i in range(3):
+        if tablero[i][0] == tablero[i][1] == "X" and tablero[i][2] == " ":
+            tablero[i][2] = "O"
+            return True
+        if tablero[i][1] == tablero[i][2] == "X" and tablero[i][0] == " ":
+            tablero[i][0] = "O"
+            return True
+        if tablero[i][0] == tablero[i][2] == "X" and tablero[i][1] == " ":
+            tablero[i][1] = "O"
+            return True
+    # revisar coincidencia en columnas 0
+    for j in range(3):
+        if tablero[0][j] == tablero[1][j] == "X" and tablero[2][j] == " ":
+            tablero[2][j] = "O"
+            return True
+        if tablero[1][j] == tablero[2][j] == "X" and tablero[0][j] == " ":
+            tablero[0][j] = "O"
+            return True
+        if tablero[0][j] == tablero[2][j] == "X" and tablero[1][j] == " ":
+            tablero[1][j] = "O"
+            return True
+    # revisar coincidencia en diagonal \
+        if tablero[0][0] == tablero[1][1] == "X" and tablero[2][2] == " ":
+            tablero[2][2] = "O"
+            return True
+        if tablero[1][1] == tablero[2][2] == "X" and tablero[0][0] == " ":
+            tablero[0][0] = "O"
+            return True
+        if tablero[0][0] == tablero[2][2] == "X" and tablero[1][1] == " ":
+            tablero[1][1] = "O"
+            return True
+    # revisar coincidencia en diagonal /
+        if tablero[0][2] == tablero[1][1] == "X" and tablero[2][0] == " ":
+            tablero[2][0] = "O"
+            return True
+        if tablero[1][1] == tablero[2][0] == "X" and tablero[0][2] == " ":
+            tablero[0][2] = "O"
+            return True
+        if tablero[0][2] == tablero[2][0] == "X" and tablero[1][1] == " ":
+            tablero[1][1] = "O"
+            return True
+    return False
 
 #revisar ganador
 def hay_ganador(tablero):
@@ -92,7 +146,8 @@ def juego():
                 break
 
             if tablero_lleno(tablero):
-                print("¡Empate!")
+                imprimir_tablero(tablero)
+                print("¡Empate!\n")
                 tablero = crear_tablero()
 
             if jugador_actual == "O":
